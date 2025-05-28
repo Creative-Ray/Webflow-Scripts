@@ -68,6 +68,7 @@ body {
     border-color: #f60;
   }
 
+  
   .answer-option.selected {
     background: #f60;
     color: black;
