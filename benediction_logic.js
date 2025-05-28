@@ -226,7 +226,8 @@ const questions = [
 
 let currentQuestionIndex = 0;
 let trionfiTally = {};
-let selectedOption = null;
+let selectedOptions = {};
+
 
 function showQuestion() {
   const question = questions[currentQuestionIndex];
@@ -266,28 +267,41 @@ function showQuestion() {
       }
     });
   });
+
+  // ✅ Restore previously selected option
+  const selected = selectedOptions[currentQuestionIndex];
+  if (selected !== undefined) {
+    document.getElementById(`option-${selected}`).classList.add('selected');
+    document.getElementById("next-button").disabled = false;
+  }
 }
 
 
 
+
 function selectAnswer(trionfis, index) {
-  // Deselect all
+  // Deselect all first
   document.querySelectorAll('.answer-option').forEach(option => {
     option.classList.remove('selected');
   });
 
-  // Select the clicked one
-  document.getElementById(`option-${index}`).classList.add('selected');
+  // Highlight selected
+  const selectedEl = document.getElementById(`option-${index}`);
+  if (selectedEl) selectedEl.classList.add('selected');
 
-  // ✅ Update selection and tally
-  if (selectedOption !== null) {
-    const prevTrionfis = questions[currentQuestionIndex].options[selectedOption].trionfis;
+  // Remove old tally if already answered
+  const previousIndex = selectedOptions[currentQuestionIndex];
+  if (previousIndex !== undefined && previousIndex !== index) {
+    const prevTrionfis = questions[currentQuestionIndex].options[previousIndex].trionfis;
     prevTrionfis.forEach(trionfi => {
       trionfiTally[trionfi] = Math.max((trionfiTally[trionfi] || 1) - 1, 0);
     });
   }
 
-  selectedOption = index;
+  // Set new selection
+  selectedOptions[currentQuestionIndex] = index;
+
+  // Add new tally
   trionfis.forEach(trionfi => {
     trionfiTally[trionfi] = (trionfiTally[trionfi] || 0) + 1;
   });
@@ -297,9 +311,9 @@ function selectAnswer(trionfis, index) {
 
 
 
+
 document.getElementById("next-button").addEventListener("click", () => {
   currentQuestionIndex++;
-  selectedOption = null; // ✅ reset so they can select again on the next question
 
   if (currentQuestionIndex < questions.length) {
     showQuestion();
