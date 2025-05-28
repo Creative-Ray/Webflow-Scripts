@@ -70,7 +70,7 @@ body {
 
   
   .answer-option.selected {
-    background: #f60;
+    background: rgb(0, 255, 34);
     color: black;
     border-color: #f60;
   }
