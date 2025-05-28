@@ -256,19 +256,27 @@ function showQuestion() {
 
 
 function selectAnswer(trionfis, index) {
-  if (selectedOption !== null) return; // Prevent multiple clicks
-  selectedOption = index;
+  // If an option was already selected, undo its previous tally
+  if (selectedOption !== null) {
+    const previousTrionfis = questions[currentQuestionIndex].options[selectedOption].trionfis;
+    previousTrionfis.forEach(trionfi => {
+      trionfiTally[trionfi] = (trionfiTally[trionfi] || 1) - 1;
+      if (trionfiTally[trionfi] === 0) delete trionfiTally[trionfi];
+    });
+  }
 
+  // Update selection
+  selectedOption = index;
   trionfis.forEach(trionfi => {
     trionfiTally[trionfi] = (trionfiTally[trionfi] || 0) + 1;
   });
 
+  // Enable next button and update UI
   document.getElementById("next-button").disabled = false;
-
-  // Highlight selected
   document.querySelectorAll('.answer-option').forEach(option => option.classList.remove('selected'));
   document.getElementById(`option-${index}`).classList.add('selected');
 }
+
 
 document.getElementById("next-button").addEventListener("click", () => {
   currentQuestionIndex++;
