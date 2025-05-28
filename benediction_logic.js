@@ -243,8 +243,7 @@ function showQuestion() {
             id="option-${index}" 
             role="button" 
             tabindex="0"
-            onclick='selectAnswer(${JSON.stringify(option.trionfis).replace(/"/g, "&quot;")}, ${index})' 
-            onkeydown='if(event.key === "Enter") selectAnswer(${JSON.stringify(option.trionfis).replace(/"/g, "&quot;")}, ${index})'
+            data-index="${index}"
           >
             ${option.text}
           </div>
@@ -252,30 +251,50 @@ function showQuestion() {
       </div>
     </div>
   `;
+
+  // ✅ Attach event listeners AFTER rendering
+  document.querySelectorAll('.answer-option').forEach(optionEl => {
+    optionEl.addEventListener('click', () => {
+      const index = parseInt(optionEl.getAttribute('data-index'));
+      selectAnswer(question.options[index].trionfis, index);
+    });
+
+    optionEl.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        const index = parseInt(optionEl.getAttribute('data-index'));
+        selectAnswer(question.options[index].trionfis, index);
+      }
+    });
+  });
 }
 
 
+
 function selectAnswer(trionfis, index) {
-  // If an option was already selected, undo its previous tally
+  // Deselect all
+  document.querySelectorAll('.answer-option').forEach(option => {
+    option.classList.remove('selected');
+  });
+
+  // Select the clicked one
+  document.getElementById(`option-${index}`).classList.add('selected');
+
+  // ✅ Update selection and tally
   if (selectedOption !== null) {
-    const previousTrionfis = questions[currentQuestionIndex].options[selectedOption].trionfis;
-    previousTrionfis.forEach(trionfi => {
-      trionfiTally[trionfi] = (trionfiTally[trionfi] || 1) - 1;
-      if (trionfiTally[trionfi] === 0) delete trionfiTally[trionfi];
+    const prevTrionfis = questions[currentQuestionIndex].options[selectedOption].trionfis;
+    prevTrionfis.forEach(trionfi => {
+      trionfiTally[trionfi] = Math.max((trionfiTally[trionfi] || 1) - 1, 0);
     });
   }
 
-  // Update selection
   selectedOption = index;
   trionfis.forEach(trionfi => {
     trionfiTally[trionfi] = (trionfiTally[trionfi] || 0) + 1;
   });
 
-  // Enable next button and update UI
   document.getElementById("next-button").disabled = false;
-  document.querySelectorAll('.answer-option').forEach(option => option.classList.remove('selected'));
-  document.getElementById(`option-${index}`).classList.add('selected');
 }
+
 
 
 document.getElementById("next-button").addEventListener("click", () => {
