@@ -63,23 +63,16 @@ body {
     transition: background 0.3s, border-color 0.3s;
   }
 
-  .answer-option.selected {
-    background-color: #f60 !important;
-    color: white !important;
-    border: 2px solid #cc5200;
+  .answer-option:hover {
+    background: #202022;
+    border-color: #f60;
   }
-  
-  .answer-option.selected:hover {
-    background-color: #f60 !important;
-    color: white !important;
-  }
-  
-  .answer-option:hover:not(.selected) {
-    background-color: #f2f2f2;
-    cursor: pointer;
-  }
-  
 
+  .answer-option.selected {
+    background: #f60;
+    color: black;
+    border-color: #f60;
+  }
 
   .next-button, .fate-button {
     display: block;
